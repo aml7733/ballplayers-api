@@ -15,69 +15,42 @@ class Player < ApplicationRecord
     end
   end
 
-  def self.create_baseball_players_from_JSON(player_hash)
-    player_hash.each do |player|
-      data_hash = {}
-      next if player['firstname'] == "" # Skips non-player entries
-      sport = Sport.find_by(title: "baseball")
-      position = Position.find_or_create_by(title: player["position"], sport: sport)
+  def self.create_from_data_and_sport(players, sport)
+    this_sport = Sport.find_by!(title: sport)
 
-      data_hash["name_brief"] = "#{player["firstname"].first}. #{player["lastname"].first.upcase}." #in case of Jacob deGrom, etc.
+    players.each do |player|
+      next if player["firstname"] == "" # Skips non-player entries
+      position = Position.find_or_create_by(title: player["position"], sport: this_sport)
+      data_hash = begin_data_hash(player)
+
+      case this_sport.title
+      when 'baseball'
+        data_hash["name_brief"] = "#{player["firstname"].first}. #{player["lastname"].first.upcase}." #in case of Jacob deGrom, etc.
+      when 'football'
+        data_hash["name_brief"] = "#{player["firstname"].first}. #{player["lastname"]}"
+      when 'basketball'
+        data_hash["name_brief"] = "#{player["firstname"]} #{player["lastname"].first.upcase}."
+      end
+
+      assign_and_save_player(data_hash, this_sport, position) unless Player.find_by(data_hash)
+    end
+  end
+
+  private
+
+    def self.begin_data_hash(player)
+      data_hash = {}
       data_hash["first_name"] = player["firstname"]
       data_hash["last_name"] = player["lastname"]
       data_hash["age"] = player["age"]
       data_hash["average_position_age_diff"] = 0
-
-      unless Player.find_by(data_hash)
-        new_player = Player.new(data_hash)
-        new_player.sport = sport
-        new_player.position = position
-        new_player.save!
-      end
+      data_hash
     end
-  end
 
-  def self.create_football_players_from_JSON(player_hash)
-    player_hash.each do |player|
-      next if player['firstname'] == ""  # Skips non-player entries
-      data_hash = {}
-      sport = Sport.find_by(title: "football")
-      position = Position.find_or_create_by(title: player["position"], sport: sport)
-
-      data_hash["name_brief"] = "#{player["firstname"].first}. #{player["lastname"]}"
-      data_hash["first_name"] = player["firstname"]
-      data_hash["last_name"] = player["lastname"]
-      data_hash["age"] = player["age"]
-      data_hash["average_position_age_diff"] = 0
-
-      unless Player.find_by(data_hash)
-        new_player = Player.new(data_hash)
-        new_player.sport = sport
-        new_player.position = position
-        new_player.save!
-      end
+    def self.assign_and_save_player(data_hash, sport, position)
+      new_player = Player.new(data_hash)
+      new_player.sport = sport
+      new_player.position = position
+      new_player.save!
     end
-  end
-
-  def self.create_basketball_players_from_JSON(player_hash)
-    player_hash.each do |player|
-      next if player['firstname'] == ""  # Skips non-player entries
-      data_hash = {}
-      sport = Sport.find_by(title: "basketball")
-      position = Position.find_or_create_by(title: player["position"], sport: sport)
-
-      data_hash["name_brief"] = "#{player["firstname"]} #{player["lastname"].first.upcase}."
-      data_hash["first_name"] = player["firstname"]
-      data_hash["last_name"] = player["lastname"]
-      data_hash["age"] = player["age"]
-      data_hash["average_position_age_diff"] = 0
-
-      unless Player.find_by(data_hash)
-        new_player = Player.new(data_hash)
-        new_player.sport = sport
-        new_player.position = position
-        new_player.save!
-      end
-    end
-  end
 end
