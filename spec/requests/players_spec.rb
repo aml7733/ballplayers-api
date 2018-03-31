@@ -5,6 +5,8 @@ RSpec.describe 'Players API', type: :request do
   let!(:positions) { create_list(:position, 10)}
   let!(:players) { create_list(:player, 100) }
   let(:player_id) { players.first.id }
+  let(:sport_title) { sports.first.title }
+  let(:sport_player_count) { sports.first.players.count }
 
   describe 'get /players' do
     before { get '/players' }
@@ -40,8 +42,35 @@ RSpec.describe 'Players API', type: :request do
         expect(response).to have_http_status(404)
       end
 
-      it "returns not found message" do
-        expect(response.body).to match(/Could not find Player/)
+      it "returns invalid request message" do
+        expect(response.body).to match(/Invalid Request/)
+      end
+    end
+  end
+
+  describe 'get /players/:sport' do
+    before { get "/players/#{sport_title}" }
+
+    context "when sport exists" do
+      it "returns all players of that sport" do
+        expect(json).not_to be_empty
+        expect(json.size).to eq(sport_player_count)
+      end
+
+      it "returns status code 200" do
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context "when sport does not exist" do
+      let(:sport_title) { "baseketsball"}
+
+      it "returns status code 404" do
+        expect(response).to have_http_status(404)
+      end
+
+      it "returns invalid request message" do
+        expect(response.body).to match(/Invalid Request/)
       end
     end
   end

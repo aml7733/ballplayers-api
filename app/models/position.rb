@@ -2,12 +2,18 @@ class Position < ApplicationRecord
   belongs_to :sport
   has_many :players, dependent: :restrict_with_exception
 
+  def self.populate_all_avg_ages
+    self.all.each do |position|
+      position.calculate_avg_age
+    end
+  end
+
   def calculate_avg_age
     total = 0.0
     count = 0
     self.players.each do |player|
       next unless player.age  # Many of JSON players do not have age param (~3000 of ~9000 are missing or nil)
-      
+
       total += player.age
       count += 1
     end
