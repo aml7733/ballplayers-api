@@ -8,12 +8,18 @@ class PlayersController < ApplicationController
     else
       @players = Player.all
     end
-    render json: @players.to_json(only: [:id, :name_brief, :first_name, :last_name, :age, :average_position_age_diff], include: [position: { only: [:title, :avg_age]}])
+    render json: PlayerSerializer.mass_serialize(@players)
+
+    #@players.to_json(only: [:id, :name_brief, :first_name, :last_name, :age, :average_position_age_diff], include: [position: { only: [:title, :avg_age]}])
+
+    #
   end
 
   def show
     @player = Player.find_by(id: params[:id]) or not_found
 
-    render json: @player.to_json(only: [:id, :name_brief, :first_name, :last_name, :age, :average_position_age_diff], include: [position: { only: [:title, :avg_age]}])
+    render json: PlayerSerializer.serialize(@player)
+
+    #@player.to_json(only: [:id, :name_brief, :first_name, :last_name, :age, :average_position_age_diff], include: [position: { only: [:title, :avg_age]}])
   end
 end
