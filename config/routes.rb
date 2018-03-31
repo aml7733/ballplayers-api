@@ -3,5 +3,4 @@ Rails.application.routes.draw do
 
   resources :players, only: [:show, :index]
 
-  get 'players/:sport', to: 'players#sport_index'
 end

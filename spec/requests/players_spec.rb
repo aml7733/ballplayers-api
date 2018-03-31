@@ -11,9 +11,9 @@ RSpec.describe 'Players API', type: :request do
   describe 'get /players' do
     before { get '/players' }
 
-    it "returns players" do
+    it "returns all players" do
       expect(json).not_to be_empty
-      expect(json.size).to eq.(100)
+      expect(json.size).to be(100)
     end
 
     it "returns status code 200" do
@@ -22,55 +22,52 @@ RSpec.describe 'Players API', type: :request do
   end
 
   describe 'get /players/:id' do
-    before { get "/players/#{player_id}" }
 
-    context "when record exists" do
+    context "when player exists" do
       it "returns the player" do
+        get "/players/#{player_id}"
+
         expect(json).not_to be_empty
         expect(json['id']).to eq(player_id)
       end
 
       it "returns status code 200" do
+        get "/players/#{player_id}"
+
         expect(response).to have_http_status(200)
       end
     end
 
     context "when record does not exist" do
-      let(:player_id) { 1000 }
-
-      it "returns status code 404" do
-        expect(response).to have_http_status(404)
-      end
-
-      it "returns invalid request message" do
-        expect(response.body).to match(/Invalid Request/)
+      it "raises error" do
+        expect do
+          get "/players/1000"
+        end.to raise_error ActiveRecord::RecordNotFound
       end
     end
   end
 
-  describe 'get /players/:sport' do
-    before { get "/players/#{sport_title}" }
+  describe 'get /players?sport=' do
 
     context "when sport exists" do
+
       it "returns all players of that sport" do
+        get "/players?sport=#{sport_title}"
         expect(json).not_to be_empty
         expect(json.size).to eq(sport_player_count)
       end
 
       it "returns status code 200" do
+        get "/players?sport=#{sport_title}"
         expect(response).to have_http_status(200)
       end
     end
 
     context "when sport does not exist" do
-      let(:sport_title) { "baseketsball"}
-
-      it "returns status code 404" do
-        expect(response).to have_http_status(404)
-      end
-
-      it "returns invalid request message" do
-        expect(response.body).to match(/Invalid Request/)
+      it "raises error" do
+        expect do
+          get "/players?sport=baseketsball"
+        end.to raise_error ActiveRecord::RecordNotFound
       end
     end
   end
