@@ -30,7 +30,11 @@ rails db:seed
 ```
 will populate the database with all Players from the CBS Sports player list (curl'd into files in ./db for ease), in addition
 to creating the associated Sport and Position models from the data.
-Note: this will take several minutes (~8900 entries total).  After that, boot up a ```rails server``` and get your JSON on.
+Note: this will take several minutes (~8900 entries total).
+It'll have to upload each record to the database, then calculate average ages, then update each entry again.
+The bright side is, since all that logic happens on seeding the database,
+the fetch and render goes faster.
+After the database is ready, boot up a ```rails server``` and get your JSON on.
 
 
 
