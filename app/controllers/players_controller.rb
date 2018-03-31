@@ -12,7 +12,8 @@ class PlayersController < ApplicationController
 
     #@players.to_json(only: [:id, :name_brief, :first_name, :last_name, :age, :average_position_age_diff], include: [position: { only: [:title, :avg_age]}])
 
-    #
+    # Use commented-out line to show position object within player json
+    # as in -> { ..., position: { title: "OF", avg_age: 26.2 }, }
   end
 
   def show
