@@ -37,7 +37,7 @@ class Player < ApplicationRecord
     end
   end
 
-  def self.create_football_players_from_JSON(player_hash) # Looks like 11 football players list "" as a position, and all 11 also list an age of nil.  I've deleted them, so as to not throw errors on age diff calculation.
+  def self.create_football_players_from_JSON(player_hash)
     player_hash.each do |player|
       next if player['firstname'] == ""  # Skips non-player entries
       data_hash = {}
