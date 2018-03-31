@@ -1,15 +1,21 @@
 # Player API README
 
 Rails API to fetch player statistic JSON data from database.  Our data comes from http://api.cbssports.com/fantasy/players/list?version=3.0
+Note on the data: about 1/3 of player entries didn't have an age listed, and there were a few non-player entries
+{firstname: "", lastname: "A's Staff", position: "", ...} etc.  
+
+The database uses models for Sport, Position, and Player such that a Sport has_many Positions and Players, and a Position has_many players.
+This relationship allows storage of the positional average age outside the player model, since the player already has two age-related attributes.
+My original code returns players with a position object-> ..., position: { title: "C", avg_age: 22.6 }, but then I thought the the JSON would be easier to consume (and more conventional) if it read the same as the other attributes; ..., position: "C". I wrote my own serializer (ugly but works), but left the old 'to_json' rendering right underneath if you want to do a quick nip/tuck in the controller. The tests pass with either serializing method.
 
 ## API endpoints
 
   GET /players  returns JSON list of all players in the database.
-    It also takes a sport parameter, namely one of the following:
+    It takes a sport parameter, namely one of the following:
     "/players?sport=football", "/players?sport=baseball", and "/players?sport=basketball"
     to list only players from the specified sport.
 
-  GET /players/:id    returns a single JSON entry for the player requested
+  GET /players/:id    returns a single JSON entry for the player by id.
 
 
 ## Getting Started
@@ -38,6 +44,9 @@ to begin the testing suite.
 I've used FactoryBot and Faker to simulate sports, positions, and players.
 My basic model tests check for valid ActiveRecord relationships.
 Request testing sends mock requests to API endpoints.  The http response is tested as well as the content.
+
+
+
 
 ## License
 
