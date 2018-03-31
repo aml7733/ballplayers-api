@@ -2,6 +2,19 @@ class Player < ApplicationRecord
   belongs_to :position
   belongs_to :sport
 
+  def self.populate_age_diff
+    self.all.each do |player|
+      unless player.age
+        player.average_position_age_diff = nil
+        player.save!
+        next
+      end
+      player.average_position_age_diff = (player.age - player.position.avg_age).round(2)
+      player.save!
+    # Could do absolute value, but pos/neg is more descriptive (neg = younger than avg)
+    end
+  end
+
   def self.create_baseball_players_from_JSON(player_hash)
     player_hash.each do |player|
       data_hash = {}
