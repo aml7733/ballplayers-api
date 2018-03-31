@@ -28,22 +28,21 @@ will load all necessary gems for development/testing.  Running
 ```
 rails db:seed
 ```
-will populate the database with all players from the CBS Sports list (curl'd into files in ./db for ease).
-Note: this will take several minutes.  After that, boot up a rails server and get your JSON on.
+will populate the database with all Players from the CBS Sports player list (curl'd into files in ./db for ease), in addition
+to creating the associated Sport and Position models from the data.
+Note: this will take several minutes (~8900 entries total).  After that, boot up a ```rails server``` and get your JSON on.
 
 
 
 ## Running the tests
 
 RSpec is the testing framework used.  Options are configured for verbose passes/failures.
-Once in the parent directory for the project, run
-```
-rspec
-```
-to begin the testing suite.
-I've used FactoryBot and Faker to simulate sports, positions, and players.
-My basic model tests check for valid ActiveRecord relationships.
+Once in the parent directory for the project, run ```rspec``` to begin the testing suite.
+FactoryBot and Faker simulate the 2 sports, 10 positions, and 100 players.
+The basic model tests check for valid ActiveRecord relationships.
 Request testing sends mock requests to API endpoints.  The http response is tested as well as the content.
+
+
 
 
 
